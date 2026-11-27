@@ -1,0 +1,81 @@
+NOTEBOOKLM KIT: LangGraph + Langfuse (local, free)
+===================================================
+
+STEP 1: ADD THESE SOURCES (Add source -> Website, one URL at a time)
+All URLs were checked on 2026-11-26.
+If a Langfuse URL fails to import, add ".md" to the end and try again (Langfuse serves clean text that way).
+
+--- Langfuse ---
+https://langfuse.com/self-hosting/deployment/docker-compose
+https://langfuse.com/docs/observability/overview
+https://langfuse.com/docs/observability/get-started
+https://langfuse.com/docs/observability/sdk/overview
+https://langfuse.com/docs/observability/features/sessions
+https://langfuse.com/integrations/frameworks/langchain
+https://langfuse.com/integrations/frameworks/langgraph
+https://langfuse.com/integrations/model-providers/ollama
+https://langfuse.com/docs/prompt-management/overview
+https://langfuse.com/docs/evaluation/overview
+https://langfuse.com/docs/evaluation/experiments/datasets
+https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge
+
+--- LangGraph ---
+NotebookLM cannot import docs.langchain.com links ("This URL type is not supported").
+Upload the files instead: Add source -> Upload files -> select all 10 files in
+~/Desktop/practice/langgraph-langfuse/sources-langgraph/
+(These are the same 10 doc pages, downloaded as markdown on 2026-11-26.)
+
+Do NOT add llms-full.txt. The LangChain one is over 10 MB and Langfuse no longer has one.
+
+
+STEP 2: CHAT SETTINGS (Chat -> settings icon -> Configure -> Custom; paste this)
+-----------------------------------------------------------------------------------
+You are my teacher. Write like a beginner-friendly programming book, not like an AI assistant.
+
+About me: I am a web developer (TypeScript). I am new to Python and I have no ML background. Use web-dev comparisons (Express middleware, Redux state, Chrome DevTools Network tab, Sentry, Git) when they help.
+
+My setup (always follow it):
+- Mac M3 with 16 GB RAM. Local models only, through Ollama (qwen3:4b or qwen3:8b). No paid APIs. When the sources use OpenAI or Anthropic, rewrite the example with ChatOllama from langchain-ollama.
+- Python projects use uv: "uv init", "uv add <package>", "uv run file.py". Never use pip or venv commands.
+- Langfuse is self-hosted with Docker Compose (latest, v4), at http://localhost:3000, with the latest Python SDK. Langfuse runs inside Docker, so when Langfuse itself must call Ollama (for example an LLM-as-a-judge connection), the URL is http://host.docker.internal:11434/v1, not localhost.
+- LangGraph 1.x.
+
+How to teach:
+1. Use simple English and short sentences. Explain every new word the first time it appears.
+2. Every topic follows this order: the problem -> how we would do it WITHOUT the tool (plain Python) -> what goes wrong -> how the tool fixes it -> the code -> what you will see in the Langfuse UI.
+3. Explain code line by line. Keep code small. Explain any Python syntax I may not know.
+4. Use ONE running project across all chapters: a "support ticket helper" that reads a customer message, decides its category, looks up an answer with a tool, and drafts a reply. Grow it a little every chapter.
+5. Learn both tools together: every LangGraph feature is traced in Langfuse in the same chapter.
+6. End every chapter with: (a) a 5-line summary, (b) 3 quiz questions with answers hidden at the very end, (c) one hands-on exercise that uses everything learned so far, with expected output and hints.
+7. If the sources do not cover something, say so clearly. Never invent function names or parameters.
+-----------------------------------------------------------------------------------
+
+
+STEP 3: GENERATE ONE CHAPTER AT A TIME
+Studio -> Reports -> "Create your own". Paste the prompt below and change the chapter number and title.
+(If you ask for the whole book at once, the result will be shallow. One chapter at a time gives depth.)
+
+Prompt:
+Write Chapter <N>: <TITLE> of my LangGraph + Langfuse book. Follow my chat settings exactly. Build on the chapters before it (the running project already has: <one line about what exists so far>).
+
+CHAPTER LIST:
+ 1. Setup: Ollama + model, a uv project, Langfuse in Docker, the first LLM call and the first trace
+ 2. Why LangGraph: build the ticket helper in plain Python first, then as a graph (state, nodes, edges)
+ 3. Tracing a graph: CallbackHandler, traces, spans, generations, tokens and latency in the UI
+ 4. Branches and loops: conditional edges, and debugging a wrong route by reading the trace
+ 5. Tools: an agent loop with tool calls, and seeing each tool call in Langfuse
+ 6. Logging vs tracing: sessions, user IDs, tags and metadata
+ 7. Memory: checkpointers, thread_id, short-term vs long-term memory
+ 8. Human in the loop: interrupt() and resuming
+ 9. Streaming output
+10. Prompt management: versions, labels, fetching a prompt inside a node, linking prompts to traces
+11. Evals part 1: scores, manual annotation, user feedback
+12. Evals part 2: datasets, experiments, and LLM-as-a-judge with a local model
+13. Bigger graphs: parallel steps, routing and orchestrator-worker, with cost and latency dashboards
+14. Capstone: review everything and finish the full project
+
+
+STEP 4: OPTIONAL EXTRAS PER CHAPTER (Studio)
+- Audio Overview: a recap to listen to after reading
+- Flashcards / Quiz: for revision
+- Mind Map: to see how the topics connect

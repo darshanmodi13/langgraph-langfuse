@@ -9,8 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-sources-langgraph
-notebooklm-kit.txt
 
 # Secrets
 .env
