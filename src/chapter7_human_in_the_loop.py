@@ -10,11 +10,14 @@ from langgraph.types import Command, interrupt
 
 from common import llm
 
+APPROVAL_LIMIT = 50.0  # refunds above this need a manager
+FINANCE_LIMIT = 500.0  # refunds above this also need finance
+
 
 # step1: state
 class BillingState(MessagesState):
     ticket_type: str
-    amount: float
+    amount: float | None  # None = no amount found in the message
     draft_response: str
     approval_status: str
 
@@ -26,18 +29,21 @@ def classify_ticket(state: BillingState) -> dict:
         match = re.search(r"\$(\d+(?:\.\d+)?)", text)
         return {
             "ticket_type": "billing",
-            "amount": float(match.group(1)) if match else 0.0,
+            "amount": float(match.group(1)) if match else None,
         }
-    return {"ticket_type": "general", "amount": 0.0}
+    return {"ticket_type": "general", "amount": None}
 
 
 def draft_response(state: BillingState) -> dict:
-    # The LLM call has its own node: on resume only human_review runs again, so this is not repeated
+    # The LLM call has its own node: on resume only the review nodes run again, so this is not repeated
     ticket = state.get("messages", [])[-1].content
-    if state.get("ticket_type") == "billing":
-        task = f"Write a reply confirming a refund of ${state.get('amount', 0.0):.2f}."
-    else:
+    amount = state.get("amount")
+    if state.get("ticket_type") != "billing":
         task = "Write a reply to this support message."
+    elif amount is None:
+        task = "Write a reply saying we are reviewing the refund request."
+    else:
+        task = f"Write a reply confirming a refund of ${amount:.2f}."
     response = llm.invoke(
         [
             SystemMessage(
@@ -49,25 +55,61 @@ def draft_response(state: BillingState) -> dict:
     return {"draft_response": response.content}
 
 
-def human_review(state: BillingState) -> Command[Literal["send_reply", "cancel_reply"]]:
+def human_review(
+    state: BillingState,
+) -> Command[Literal["finance_review", "send_reply", "cancel_reply"]]:
+    amount = state.get("amount")
     if state.get("ticket_type") != "billing":
         return Command(update={"approval_status": "auto_approved"}, goto="send_reply")
+    # Safe before interrupt(): it only reads state, which is the same when the node re-runs on resume
+    if amount is not None and amount <= APPROVAL_LIMIT:
+        return Command(update={"approval_status": "auto_approved"}, goto="send_reply")
 
-    # 1st run: pauses here. After Command(resume=...): returns the reviewer's answer
     decision = interrupt(
         {
+            "reviewer": "manager",
             "question": "Approve this refund reply?",
+            "amount": amount,
+            "draft": state.get("draft_response"),
+        }
+    )
+    if not decision.get("approved"):
+        return Command(update={"approval_status": "rejected"}, goto="cancel_reply")
+
+    final_draft = decision.get("edited_draft", state.get("draft_response", ""))
+    if amount is not None and amount > FINANCE_LIMIT:
+        return Command(
+            update={
+                "draft_response": final_draft,
+                "approval_status": "manager_approved",
+            },
+            goto="finance_review",
+        )
+    return Command(
+        update={"draft_response": final_draft, "approval_status": "approved"},
+        goto="send_reply",
+    )
+
+
+def finance_review(
+    state: BillingState,
+) -> Command[Literal["send_reply", "cancel_reply"]]:
+    # A separate node, so the manager's answer is not replayed: each approval is its own pause
+    decision = interrupt(
+        {
+            "reviewer": "finance",
+            "question": "Manager approved. Approve this large refund?",
             "amount": state.get("amount"),
             "draft": state.get("draft_response"),
         }
     )
-    if decision.get("approved"):
-        final_draft = decision.get("edited_draft", state.get("draft_response", ""))
-        return Command(
-            update={"draft_response": final_draft, "approval_status": "approved"},
-            goto="send_reply",
-        )
-    return Command(update={"approval_status": "rejected"}, goto="cancel_reply")
+    if not decision.get("approved"):
+        return Command(update={"approval_status": "rejected"}, goto="cancel_reply")
+    final_draft = decision.get("edited_draft", state.get("draft_response", ""))
+    return Command(
+        update={"draft_response": final_draft, "approval_status": "approved"},
+        goto="send_reply",
+    )
 
 
 def send_reply(state: BillingState) -> dict:
@@ -83,6 +125,7 @@ builder = StateGraph(BillingState)
 builder.add_node("classify_ticket", classify_ticket)
 builder.add_node("draft_response", draft_response)
 builder.add_node("human_review", human_review)
+builder.add_node("finance_review", finance_review)
 builder.add_node("send_reply", send_reply)
 builder.add_node("cancel_reply", cancel_reply)
 
@@ -97,8 +140,10 @@ app = builder.compile(checkpointer=InMemorySaver())
 
 
 def ask_reviewer(question: dict) -> dict:
-    print("\n[GRAPH PAUSED: waiting for a human]")
-    print(f"  {question.get('question')}  amount: ${question.get('amount', 0.0):.2f}")
+    amount = question.get("amount")
+    shown_amount = "unknown" if amount is None else f"${amount:.2f}"
+    print(f"\n[GRAPH PAUSED: waiting for {question.get('reviewer')}]")
+    print(f"  {question.get('question')}  amount: {shown_amount}")
     print(f"  draft: {question.get('draft')}")
     choice = input("Approve? (yes/edit/no): ").strip().lower()
     if choice == "yes":
@@ -135,13 +180,37 @@ def main() -> None:
     with open("graph.mmd", "w") as f:
         f.write(app.get_graph().draw_mermaid())
 
-    # step6: a billing ticket pauses for approval
-    handle_ticket(
-        "ticket-501", "customer-42", "I was double charged. Please refund $49.99."
-    )
-
-    # step7: a general ticket is auto-approved, no pause
-    handle_ticket("ticket-502", "customer-77", "How do I change my profile picture?")
+    # step6: one ticket per rule
+    tickets = [
+        ("ticket-601", "customer-41", "Please refund $30."),  # auto-approved
+        (
+            "ticket-602",
+            "customer-42",
+            "Please refund $50.",
+        ),  # auto-approved: limit is "more than $50"
+        (
+            "ticket-603",
+            "customer-43",
+            "I was double charged. Please refund $150.",
+        ),  # manager
+        (
+            "ticket-604",
+            "customer-44",
+            "Please refund $600 for my annual plan.",
+        ),  # manager, then finance
+        (
+            "ticket-605",
+            "customer-45",
+            "Please refund my last payment.",
+        ),  # unknown amount: manager
+        (
+            "ticket-606",
+            "customer-46",
+            "How do I change my profile picture?",
+        ),  # general: auto-approved
+    ]
+    for thread_id, user_id, text in tickets:
+        handle_ticket(thread_id, user_id, text)
 
     get_client().flush()
 
