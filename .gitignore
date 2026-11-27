@@ -12,3 +12,7 @@ wheels/
 
 # Secrets
 .env
+
+# Generated graph drawings (recreated on every run)
+graph.mmd
+graph.png
