@@ -10,7 +10,7 @@ Then, in the Create report dialog, open the sources dropdown and tick ONLY:
 
 STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
 everything between the two scissor lines below -> Generate.
-(The prompt is 1792 characters; NotebookLM allows up to 5,000.)
+(The prompt is 2103 characters; NotebookLM allows up to 5,000.)
 
 -------- 8< -------- COPY FROM HERE -------- 8< --------
 Write Chapter 14 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
@@ -32,6 +32,8 @@ THIS CHAPTER:
 DO NOT COVER: topics of other chapters in the chapter plan, especially: nothing new; only combine earlier chapters.
 
 EXERCISE: Build the capstone app. Process 5 tickets end to end (at least one billing ticket needing approval and one multi-question ticket). Write a one-page report from Langfuse data: average latency, tokens per ticket, the experiment result, and the 2 worst-scored traces with what went wrong.
+
+FULL EXAMPLE: teach each idea in small parts first. Then, near the end, add a section "Full example" with ONE complete runnable file that combines everything taught in this chapter: full code, no "..." and no missing pieces, ready for "uv run". Explain how to run it and what its trace looks like in Langfuse.
 
 End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
 -------- 8< -------- COPY UNTIL HERE -------- 8< --------

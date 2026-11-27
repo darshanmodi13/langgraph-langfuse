@@ -15,7 +15,7 @@ Then, in the Create report dialog, open the sources dropdown and tick ONLY:
 
 STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
 everything between the two scissor lines below -> Generate.
-(The prompt is 2021 characters; NotebookLM allows up to 5,000.)
+(The prompt is 2332 characters; NotebookLM allows up to 5,000.)
 
 -------- 8< -------- COPY FROM HERE -------- 8< --------
 Write Chapter 12 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
@@ -40,6 +40,8 @@ THIS CHAPTER:
 DO NOT COVER: topics of other chapters in the chapter plan, especially: subgraphs, cost tracking, dashboards.
 
 EXERCISE: Set up the Ollama LLM connection and an evaluator that scores reply politeness from 0 to 1. Re-run the dataset experiment and compare the judge's scores with your manual helpfulness annotations from Chapter 10. Where do they disagree?
+
+FULL EXAMPLE: teach each idea in small parts first. Then, near the end, add a section "Full example" with ONE complete runnable file that combines everything taught in this chapter: full code, no "..." and no missing pieces, ready for "uv run". Explain how to run it and what its trace looks like in Langfuse.
 
 End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
 -------- 8< -------- COPY UNTIL HERE -------- 8< --------

@@ -19,7 +19,7 @@ Then, in the Create report dialog, open the sources dropdown and tick ONLY:
 
 STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
 everything between the two scissor lines below -> Generate.
-(The prompt is 2944 characters; NotebookLM allows up to 5,000.)
+(The prompt is 3255 characters; NotebookLM allows up to 5,000.)
 
 -------- 8< -------- COPY FROM HERE -------- 8< --------
 Write Chapter 2 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
@@ -49,6 +49,8 @@ Section 4. Routing. Build step2_routing.py: SupportTicketState (email_content, c
 DO NOT COVER: topics of other chapters in the chapter plan, especially: tools, Send, parallel workers, evaluator loops, memory, interrupts, streaming, prompt management, scores, datasets.
 
 EXERCISE: On step2_routing.py, replace the keyword-based classify_intent with llm.with_structured_output() and a Pydantic model (intent, urgency, summary), keeping the Command routing. Run a billing, a bug and a question ticket; for each, find in Langfuse the route taken, the GENERATION's input and output, and its token counts. Give the expected trace shape for each.
+
+FULL EXAMPLE: teach each idea in small parts first. Then, near the end, add a section "Full example" with ONE complete runnable file that combines everything taught in this chapter: full code, no "..." and no missing pieces, ready for "uv run". Explain how to run it and what its trace looks like in Langfuse.
 
 End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
 -------- 8< -------- COPY UNTIL HERE -------- 8< --------

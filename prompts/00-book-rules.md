@@ -9,6 +9,7 @@ These rules apply to every chapter of this book. When a prompt says "follow 00-b
 - Use web-dev comparisons when they help: Express middleware, Redux, Promise.all, optional chaining, Chrome DevTools Network tab, Sentry, Git.
 - Explain code line by line. Explain any Python syntax a TypeScript developer may not know (TypedDict, Literal, type hints, decorators, list[-1], dict.get, getattr, with open(...)).
 - Teach each topic in this order: the problem -> the plain Python way -> what goes wrong -> how the tool fixes it -> the code -> what to look for in Langfuse.
+- Teach each idea in small parts first. Then, near the end of the chapter, add a "Full example" section with ONE complete runnable file that combines everything taught in the chapter: full code, no "..." and no missing pieces, ready for `uv run`, with how to run it and what its trace looks like in Langfuse.
 - End every chapter with: (a) a 5-line summary, (b) 5 quiz questions with answers at the very end, (c) the chapter's exercise, with the expected result and hints but not the full solution.
 
 ## 2. Setup

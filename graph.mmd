@@ -5,17 +5,13 @@ config:
 ---
 graph TD;
 	__start__([<p>__start__</p>]):::first
-	orchestrator(orchestrator)
-	worker_answer(worker_answer)
-	synthesizer(synthesizer)
-	evaluate_draft(evaluate_draft)
+	llm_call(llm_call)
+	tool_node(tool_node<hr/><small><em>__tools = calculate_refund</em></small>)
 	__end__([<p>__end__</p>]):::last
-	__start__ --> orchestrator;
-	evaluate_draft -.-> __end__;
-	evaluate_draft -.-> synthesizer;
-	orchestrator -.-> worker_answer;
-	synthesizer --> evaluate_draft;
-	worker_answer --> synthesizer;
+	__start__ --> llm_call;
+	llm_call -.-> __end__;
+	llm_call -.-> tool_node;
+	tool_node --> llm_call;
 	classDef default fill:#f2f0ff,line-height:1.2
 	classDef first fill-opacity:0
 	classDef last fill:#bfb6fc

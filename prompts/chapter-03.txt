@@ -17,7 +17,7 @@ Then, in the Create report dialog, open the sources dropdown and tick ONLY:
 
 STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
 everything between the two scissor lines below -> Generate.
-(The prompt is 2527 characters; NotebookLM allows up to 5,000.)
+(The prompt is 2838 characters; NotebookLM allows up to 5,000.)
 
 -------- 8< -------- COPY FROM HERE -------- 8< --------
 Write Chapter 3 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
@@ -42,6 +42,8 @@ THIS CHAPTER:
 DO NOT COVER: topics of other chapters in the chapter plan, especially: Send, parallel workers, evaluator loops, sessions, memory, interrupts, streaming, prompt management, scores.
 
 EXERCISE: On step3_tools.py, add a tool check_refund_status(order_id: str) with a good docstring. Ask: 'My app crashes when I upload a photo', 'What is 2 + 2?', 'Where is my refund for order 1234?', 'My app crashed and I was double charged'. For each, predict then check in Langfuse: number of GENERATIONs, tools called, input tokens of the first call.
+
+FULL EXAMPLE: teach each idea in small parts first. Then, near the end, add a section "Full example" with ONE complete runnable file that combines everything taught in this chapter: full code, no "..." and no missing pieces, ready for "uv run". Explain how to run it and what its trace looks like in Langfuse.
 
 End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
 -------- 8< -------- COPY UNTIL HERE -------- 8< --------

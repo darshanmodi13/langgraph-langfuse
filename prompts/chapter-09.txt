@@ -19,7 +19,7 @@ Then, in the Create report dialog, open the sources dropdown and tick ONLY:
 
 STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
 everything between the two scissor lines below -> Generate.
-(The prompt is 1991 characters; NotebookLM allows up to 5,000.)
+(The prompt is 2302 characters; NotebookLM allows up to 5,000.)
 
 -------- 8< -------- COPY FROM HERE -------- 8< --------
 Write Chapter 9 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
@@ -44,6 +44,8 @@ THIS CHAPTER:
 DO NOT COVER: topics of other chapters in the chapter plan, especially: scores, datasets, experiments, LLM-as-a-judge, subgraphs, dashboards.
 
 EXERCISE: Move the llm_call system prompt and the classifier prompt into Langfuse. Create version 1 and a version 2 with a different tone, and switch the production label without changing code. Run the same ticket under each and compare the two generations in Langfuse.
+
+FULL EXAMPLE: teach each idea in small parts first. Then, near the end, add a section "Full example" with ONE complete runnable file that combines everything taught in this chapter: full code, no "..." and no missing pieces, ready for "uv run". Explain how to run it and what its trace looks like in Langfuse.
 
 End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
 -------- 8< -------- COPY UNTIL HERE -------- 8< --------
