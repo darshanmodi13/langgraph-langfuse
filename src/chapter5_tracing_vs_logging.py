@@ -1,24 +1,20 @@
 import os
 from typing import Literal
 
-from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.tools import tool
-from langchain_ollama import ChatOllama
 from langfuse import get_client
 from langfuse.langchain import CallbackHandler
 from langgraph.graph import END, START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode
 
-# step1: setup env
-load_dotenv()
+from common import llm
+
+# step1: setup env (.env and llm come from common.py)
 os.environ["LANGFUSE_TRACING_ENVIRONMENT"] = "development"
 
-# step2: setup llm
-llm = ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False)
 
-
-# step3: tools
+# step2: tools
 @tool
 def calculate_refund(amount: int, fee: int) -> int:
     """Calculates net refund amount given gross amount and processing fee."""
@@ -29,10 +25,10 @@ tools = [calculate_refund]
 llm_with_tools = llm.bind_tools(tools)
 
 
-# step4: Nodes
+# step3: nodes
 def llm_call(state: MessagesState):
     system_prompt = SystemMessage(content="You are an automated support assistant.")
-    response = llm_with_tools.invoke([system_prompt] + state["messages"])
+    response = llm_with_tools.invoke([system_prompt] + state.get("messages", []))
     return {"messages": [response]}
 
 
@@ -40,12 +36,12 @@ tool_node = ToolNode(tools)
 
 
 def should_continue(state: MessagesState) -> Literal[END, "tool_node"]:
-    if getattr(state["messages"][-1], "tool_calls", None):
+    if getattr(state.get("messages", [])[-1], "tool_calls", None):
         return "tool_node"
     return END
 
 
-# step5: graph
+# step4: graph
 builder = StateGraph(MessagesState)
 
 builder.add_node("llm_call", llm_call)
@@ -56,11 +52,11 @@ builder.add_conditional_edges("llm_call", should_continue, ["tool_node", END])
 builder.add_edge("tool_node", "llm_call")
 app = builder.compile()
 
-# step6: graph visualization
+# step5: graph visualization
 with open("graph.mmd", "w") as f:
     f.write(app.get_graph().draw_mermaid())
 
-# step7: execute graph
+# step6: execute graph
 input_payload = {
     "messages": [HumanMessage(content="Calculate refund for amount 100 with fee 15.")]
 }
@@ -75,6 +71,6 @@ config = {
 }
 
 response = app.invoke(input_payload, config=config)
-print("Final Reply:", response["messages"][-1].content)
+print("Final Reply:", response.get("messages", [])[-1].content)
 
 get_client().flush()

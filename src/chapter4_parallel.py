@@ -1,21 +1,17 @@
 import operator
 from typing import Annotated, Literal, TypedDict
 
-from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_ollama.chat_models import ChatOllama
 from langfuse import get_client
 from langfuse.langchain import CallbackHandler
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 from pydantic import BaseModel, Field
 
-load_dotenv()
-
-llm = ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False)
+from common import llm
 
 
-# Pydantic schema for evaluator output
+# step1: schemas and structured llm
 class DraftFeedback(BaseModel):
     grade: Literal["PASS", "FAIL"] = Field(
         description="Grade evaluation of draft response."
@@ -26,13 +22,12 @@ class DraftFeedback(BaseModel):
 llm_evaluator = llm.with_structured_output(DraftFeedback)
 
 
-# Worker item schema
 class SubTask(BaseModel):
     query_id: str
     question: str
 
 
-# Overall state
+# step2: state
 class ParallelSupportState(TypedDict):
     ticket_text: str
     sub_tasks: list[SubTask]
@@ -46,11 +41,11 @@ class ParallelSupportState(TypedDict):
 MAX_ATTEMPTS = 3
 
 
-# Worker Node State
 class WorkerState(TypedDict):
     sub_task: SubTask
 
 
+# step3: nodes
 def orchestrator(state: ParallelSupportState) -> dict:
     """Breaks down complex ticket into sub-tasks."""
     tasks = [
@@ -119,7 +114,7 @@ def route_evaluation(state: ParallelSupportState) -> Literal[END, "synthesizer"]
     return "synthesizer"
 
 
-# Construct Workflow Graph
+# step4: graph
 builder = StateGraph(ParallelSupportState)
 builder.add_node("orchestrator", orchestrator)
 builder.add_node("worker_answer", worker_answer)
@@ -134,19 +129,14 @@ builder.add_conditional_edges(
 )
 
 app = builder.compile()
+
+# step5: graph visualization
 with open("graph.mmd", "w") as f:
     f.write(app.get_graph().draw_mermaid())
 
-# # Execute run
+# step6: execute graph
 result = app.invoke(
-    {
-        "ticket_text": "I need help updating my credit card and getting my monthly invoice.",
-        "sub_tasks": [],
-        "draft_answers": [],
-        "final_draft": "",
-        "grade_status": "",
-        "feedback": "",
-    },
+    {"ticket_text": "I need help updating my credit card and getting my monthly invoice."},
     config={"callbacks": [CallbackHandler()]},
 )
 
@@ -155,5 +145,4 @@ print(result.get("final_draft"))
 print(f"Grade Status: {result.get('grade_status')}")
 print(f"Attempts: {result.get('attempts')}")
 
-# Flush Langfuse client to transmit telemetry logs before process exit
 get_client().flush()

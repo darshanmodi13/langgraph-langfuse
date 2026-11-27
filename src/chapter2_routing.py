@@ -1,17 +1,14 @@
 from typing import Literal, TypedDict
 
-from dotenv import load_dotenv
-from langchain_ollama import ChatOllama
 from langfuse import get_client
 from langfuse.langchain import CallbackHandler
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 
-load_dotenv()
-
-llm = ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False)
+import common  # noqa: F401  loads .env; this step uses keyword rules, not the llm
 
 
+# step1: state
 class TicketClassification(TypedDict):
     intent: Literal["billing", "bug", "question"]
     urgency: Literal["low", "medium", "high"]
@@ -25,11 +22,12 @@ class SupportTicketState(TypedDict):
     draft_response: str | None
 
 
+# step2: nodes
 def classify_intent(
     state: SupportTicketState,
 ) -> Command[Literal["search_documentation", "bug_tracking", "draft_response"]]:
     """Classifies ticket intent and returns a Command combining state update and routing target."""
-    content = state["email_content"].lower()
+    content = state.get("email_content", "").lower()
 
     # Deterministic classification logic based on content inspection
     if "charged" in content or "billing" in content or "refund" in content:
@@ -90,34 +88,35 @@ def draft_response(state: SupportTicketState) -> dict:
     return {"draft_response": draft}
 
 
-# Construct graph with custom SupportTicketState
+# step3: graph
 builder = StateGraph(SupportTicketState)
 
-# Add nodes
 builder.add_node("classify_intent", classify_intent)
 builder.add_node("search_documentation", search_documentation)
 builder.add_node("bug_tracking", bug_tracking)
 builder.add_node("draft_response", draft_response)
 
-# Connect edges
 builder.add_edge(START, "classify_intent")
 builder.add_edge("draft_response", END)
 app = builder.compile()
 
-# Execute graph with a billing ticket payload
+# step4: graph visualization
+with open("graph.mmd", "w") as f:
+    f.write(app.get_graph().draw_mermaid())
+
+# step5: execute graph
 input_payload = {
     "email_content": "I was charged twice for my subscription this month!",
     "classification": None,
     "search_results": None,
     "draft_response": None,
 }
-app.get_graph().draw_mermaid_png(output_file_path="graph.png")
 output = app.invoke(input_payload, config={"callbacks": [CallbackHandler()]})
 
+classification = output.get("classification") or {}
 print("--- GRAPH EXECUTION RESULT ---")
-print(f"Intent Classified : {output['classification']['intent']}")
-print(f"Urgency Level : {output['classification']['urgency']}")
-print(f"Final Response : {output['draft_response']}")
+print(f"Intent Classified : {classification.get('intent')}")
+print(f"Urgency Level : {classification.get('urgency')}")
+print(f"Final Response : {output.get('draft_response')}")
 
-# Flush Langfuse client to transmit trace logs before process exit
 get_client().flush()
