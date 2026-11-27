@@ -30,6 +30,13 @@ uv run src/chapter3_tools.py
 
 Then open Langfuse → Tracing to see what happened inside the run.
 
+## Lint and format
+
+```bash
+uv run ruff check --fix src/
+uv run ruff format src/
+```
+
 ## Folder layout
 
 | Path | What it is |

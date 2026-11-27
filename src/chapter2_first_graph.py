@@ -25,15 +25,21 @@ builder.add_edge("classify_init_ticket", END)
 
 app = builder.compile()
 
-# step3: execute graph
-initial_state = {
-    "messages": [
-        HumanMessage(content="I was double charged for my monthly subscription!")
-    ]
-}
-result = app.invoke(initial_state, config={"callbacks": [CallbackHandler()]})
 
-for msg in result.get("messages", []):
-    msg.pretty_print()
+def main() -> None:
+    # step3: execute graph
+    initial_state = {
+        "messages": [
+            HumanMessage(content="I was double charged for my monthly subscription!")
+        ]
+    }
+    result = app.invoke(initial_state, config={"callbacks": [CallbackHandler()]})
 
-get_client().flush()
+    for msg in result.get("messages", []):
+        msg.pretty_print()
+
+    get_client().flush()
+
+
+if __name__ == "__main__":
+    main()

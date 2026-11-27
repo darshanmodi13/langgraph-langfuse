@@ -73,16 +73,22 @@ graph.add_edge("tool_node", "llm_call")
 
 app = graph.compile()
 
-# step4: graph visualization
-with open("graph.mmd", "w") as f:
-    f.write(app.get_graph().draw_mermaid())
 
-# step5: execute graph
-query = {"messages": [HumanMessage(content="How do I reset my account password?")]}
-output = app.invoke(query, config={"callbacks": [CallbackHandler()]})
+def main() -> None:
+    # step4: graph visualization
+    with open("graph.mmd", "w") as f:
+        f.write(app.get_graph().draw_mermaid())
 
-print("--- AGENT DIALOGUE HISTORY ---")
-for m in output.get("messages", []):
-    m.pretty_print()
+    # step5: execute graph
+    query = {"messages": [HumanMessage(content="How do I reset my account password?")]}
+    output = app.invoke(query, config={"callbacks": [CallbackHandler()]})
 
-get_client().flush()
+    print("--- AGENT DIALOGUE HISTORY ---")
+    for m in output.get("messages", []):
+        m.pretty_print()
+
+    get_client().flush()
+
+
+if __name__ == "__main__":
+    main()

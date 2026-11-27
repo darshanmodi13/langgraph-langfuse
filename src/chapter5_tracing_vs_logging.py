@@ -52,25 +52,33 @@ builder.add_conditional_edges("llm_call", should_continue, ["tool_node", END])
 builder.add_edge("tool_node", "llm_call")
 app = builder.compile()
 
-# step5: graph visualization
-with open("graph.mmd", "w") as f:
-    f.write(app.get_graph().draw_mermaid())
 
-# step6: execute graph
-input_payload = {
-    "messages": [HumanMessage(content="Calculate refund for amount 100 with fee 15.")]
-}
-config = {
-    "callbacks": [CallbackHandler()],
-    "metadata": {
-        "langfuse_session_id": "ticket-123",
-        "langfuse_user_id": "customer-42",
-        "langfuse_tags": ["billing", "refund"],
-        "langfuse_trace_name": "support-ticket",
-    },
-}
+def main() -> None:
+    # step5: graph visualization
+    with open("graph.mmd", "w") as f:
+        f.write(app.get_graph().draw_mermaid())
 
-response = app.invoke(input_payload, config=config)
-print("Final Reply:", response.get("messages", [])[-1].content)
+    # step6: execute graph
+    input_payload = {
+        "messages": [
+            HumanMessage(content="Calculate refund for amount 100 with fee 15.")
+        ]
+    }
+    config = {
+        "callbacks": [CallbackHandler()],
+        "metadata": {
+            "langfuse_session_id": "ticket-123",
+            "langfuse_user_id": "customer-42",
+            "langfuse_tags": ["billing", "refund"],
+            "langfuse_trace_name": "support-ticket",
+        },
+    }
 
-get_client().flush()
+    response = app.invoke(input_payload, config=config)
+    print("Final Reply:", response.get("messages", [])[-1].content)
+
+    get_client().flush()
+
+
+if __name__ == "__main__":
+    main()

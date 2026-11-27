@@ -130,19 +130,27 @@ builder.add_conditional_edges(
 
 app = builder.compile()
 
-# step5: graph visualization
-with open("graph.mmd", "w") as f:
-    f.write(app.get_graph().draw_mermaid())
 
-# step6: execute graph
-result = app.invoke(
-    {"ticket_text": "I need help updating my credit card and getting my monthly invoice."},
-    config={"callbacks": [CallbackHandler()]},
-)
+def main() -> None:
+    # step5: graph visualization
+    with open("graph.mmd", "w") as f:
+        f.write(app.get_graph().draw_mermaid())
 
-print("--- FINAL EVALUATED DRAFT ---")
-print(result.get("final_draft"))
-print(f"Grade Status: {result.get('grade_status')}")
-print(f"Attempts: {result.get('attempts')}")
+    # step6: execute graph
+    result = app.invoke(
+        {
+            "ticket_text": "I need help updating my credit card and getting my monthly invoice."
+        },
+        config={"callbacks": [CallbackHandler()]},
+    )
 
-get_client().flush()
+    print("--- FINAL EVALUATED DRAFT ---")
+    print(result.get("final_draft"))
+    print(f"Grade Status: {result.get('grade_status')}")
+    print(f"Attempts: {result.get('attempts')}")
+
+    get_client().flush()
+
+
+if __name__ == "__main__":
+    main()

@@ -100,23 +100,29 @@ builder.add_edge(START, "classify_intent")
 builder.add_edge("draft_response", END)
 app = builder.compile()
 
-# step4: graph visualization
-with open("graph.mmd", "w") as f:
-    f.write(app.get_graph().draw_mermaid())
 
-# step5: execute graph
-input_payload = {
-    "email_content": "I was charged twice for my subscription this month!",
-    "classification": None,
-    "search_results": None,
-    "draft_response": None,
-}
-output = app.invoke(input_payload, config={"callbacks": [CallbackHandler()]})
+def main() -> None:
+    # step4: graph visualization
+    with open("graph.mmd", "w") as f:
+        f.write(app.get_graph().draw_mermaid())
 
-classification = output.get("classification") or {}
-print("--- GRAPH EXECUTION RESULT ---")
-print(f"Intent Classified : {classification.get('intent')}")
-print(f"Urgency Level : {classification.get('urgency')}")
-print(f"Final Response : {output.get('draft_response')}")
+    # step5: execute graph
+    input_payload = {
+        "email_content": "I was charged twice for my subscription this month!",
+        "classification": None,
+        "search_results": None,
+        "draft_response": None,
+    }
+    output = app.invoke(input_payload, config={"callbacks": [CallbackHandler()]})
 
-get_client().flush()
+    classification = output.get("classification") or {}
+    print("--- GRAPH EXECUTION RESULT ---")
+    print(f"Intent Classified : {classification.get('intent')}")
+    print(f"Urgency Level : {classification.get('urgency')}")
+    print(f"Final Response : {output.get('draft_response')}")
+
+    get_client().flush()
+
+
+if __name__ == "__main__":
+    main()
