@@ -1,0 +1,42 @@
+CHAPTER 8 PROMPT: Streaming output
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 09-streaming.md
+  - 10-chat-ollama.md
+  - "LangChain Tracing & Callbacks — Open Source Observability for LangChain & LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 1814 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 8 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 8: "Streaming output"
+
+WHAT EXISTS SO FAR: The support helper with tools, memory and human approval, traced with sessions.
+
+THIS CHAPTER:
+- The problem: the user waits for a blank screen until the whole reply is ready.
+- app.stream() vs app.invoke(); the stream modes in the sources (for example values, updates, messages, custom) with one small example each.
+- Streaming LLM tokens as they are generated, like server-sent events in a web app.
+- Streaming progress updates from inside a node, per the sources.
+- The newer stream format that needs LangGraph 1.1 or later, per the sources.
+- In Langfuse: pass the CallbackHandler to app.stream() the same way; time to first token becomes meaningful.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: prompt management, scores, datasets, evals, subgraphs.
+
+EXERCISE: Make the support helper stream: print each node name as it starts, then the final reply token by token. Compare latency and time to first token in Langfuse for a streamed run and a normal invoke() of the same ticket.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

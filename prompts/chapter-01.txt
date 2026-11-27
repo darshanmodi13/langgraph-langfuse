@@ -1,0 +1,45 @@
+CHAPTER 1 PROMPT: Setup: Ollama, uv, self-hosted Langfuse and your first trace
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 10-chat-ollama.md
+  - "Docker Compose Deployment (Self-Hosted) - Langfuse"
+  - "Get Started with LLM Tracing - Langfuse"
+  - "Python & JS/TS Observability SDKs - Langfuse"
+  - "LangChain Tracing & Callbacks — Open Source Observability for LangChain & LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2181 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 1 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 1: "Setup: Ollama, uv, self-hosted Langfuse and your first trace"
+
+WHAT EXISTS SO FAR: Nothing yet. This is the first chapter.
+
+THIS CHAPTER:
+- Installing Ollama and pulling qwen3.5:9b; what a local model is and its RAM cost on a 16 GB Mac.
+- A uv project: uv init, uv add langchain-ollama langfuse python-dotenv; what uv does for you.
+- Langfuse with Docker Compose: one line on each container (langfuse-web, langfuse-worker, Postgres, ClickHouse, Redis, MinIO). Secrets in a .env next to docker-compose.yml, and .env in .gitignore.
+- First login: no default user; sign up locally, create an organization and project, create API keys (pk-lf-..., sk-lf-...).
+- main.py: one ChatOllama call that summarises a ticket, with the CallbackHandler passed as config={"callbacks": [handler]} to llm.invoke, and get_client().flush() at the end.
+- Common mistakes: LANGFUSE_PRIVATE_KEY instead of LANGFUSE_SECRET_KEY (the SDK then sends nothing, silently); forgetting flush(); "thinking" instead of "reasoning".
+- Finding the trace in Langfuse: input, output, model, tokens.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: graphs, routing, tools, sessions, memory, prompts, scores, evals.
+
+EXERCISE: Change main.py to classify the ticket into Billing, Bug or General instead of summarising it. Run three tickets and find the three traces in Langfuse. For each, note input tokens, output tokens and latency.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

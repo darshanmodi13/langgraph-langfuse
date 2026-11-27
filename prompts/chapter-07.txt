@@ -1,0 +1,44 @@
+CHAPTER 7 PROMPT: Human in the loop: pausing for approval
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 08-interrupts.md
+  - 06-persistence.md
+  - 13-checkpointers.md
+  - "Sessions - Langfuse"
+  - "Open Source Observability for LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2114 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 7 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 7: "Human in the loop: pausing for approval"
+
+WHAT EXISTS SO FAR: The support helper with tools and a checkpointer (memory per thread_id), traced with sessions.
+
+THIS CHAPTER:
+- The problem: some replies (refunds, billing errors) need a person's approval before sending. The plain Python way (polling loops) and why it breaks.
+- interrupt(payload) pauses the graph and returns the payload under "__interrupt__"; a checkpointer is required.
+- Resuming with app.invoke(Command(resume=value), config) on the SAME thread_id; the value becomes interrupt()'s return value.
+- The rules from the sources: the node restarts from the top on resume (code before interrupt() must be safe to repeat), never wrap interrupt() in a bare try/except, keep multiple interrupt() calls in a fixed order.
+- Approve, edit and reject flows routed with Command(goto=...).
+- In Langfuse: the first invoke() and the resume are separate traces; give both the same langfuse_session_id to see them in one session.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: streaming, prompt management, scores, datasets, evals.
+
+EXERCISE: Add a human_review node that pauses only for billing tickets. Write a loop that prints the draft and reads approve/edit/reject from input(). Test all three. In Langfuse, find both traces of one approved ticket in the same session.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

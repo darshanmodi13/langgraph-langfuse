@@ -1,0 +1,48 @@
+CHAPTER 4 PROMPT: Parallel work and quality loops
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - sources-langgraph/11-graph-api-control-flow.md (upload)
+  - sources-langgraph/12-graph-api-send-command.md (upload)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 04-graph-api.md
+  - 05-workflows-agents.md
+  - 11-graph-api-control-flow.md
+  - 12-graph-api-send-command.md
+  - "Open Source Observability for LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2573 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 4 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 4: "Parallel work and quality loops"
+
+WHAT EXISTS SO FAR: step3_tools.py: a traced agent loop with search_document and create_bug_ticket tools.
+
+THIS CHAPTER:
+- The problem: a ticket with several questions answered one by one is slow.
+- Send: returned from the function given to add_conditional_edges; each Send("node", input) starts one run of that node with its own input. "Conditional" here means "an edge that runs a function". Each worker gets only its own input (a WorkerState).
+- Super-steps: rounds; same-round nodes run in parallel; the next round waits for all of them (like await Promise.all). That is how the synthesizer runs once, after the slowest worker, without knowing how many workers exist.
+- Reducers for parallel writes: Annotated[list[str], operator.add], and the error without one.
+- max_concurrency in the config; it limits one invoke() only; Ollama also queues requests beyond its own limit.
+- Evaluator-optimizer with with_structured_output: route FAIL back to the node that creates content, make it use state.get("feedback"), add an attempts counter with MAX_ATTEMPTS, and the operator.add append caveat.
+- Use the parallel-work facts in section 6 of 00-book-rules.md.
+- In Langfuse: overlapping worker timings, and the synthesizer starting after the slowest one.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: sessions, memory, interrupts, streaming, prompt management, scores, datasets.
+
+EXERCISE: On step4_advanced.py: make the orchestrator an LLM call (with_structured_output) that splits ticket_text into sub-tasks; make FAIL go to a rewrite node that uses the feedback, keeping the attempts limit; run a 4-question ticket with max_concurrency=2. In Langfuse, check the number of worker runs, whether they overlapped, and the number of evaluation rounds.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

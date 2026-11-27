@@ -1,0 +1,37 @@
+CHAPTER 14 PROMPT: Capstone: the complete support ticket helper
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - Select all sources
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 1792 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 14 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 14: "Capstone: the complete support ticket helper"
+
+WHAT EXISTS SO FAR: Every feature from Chapters 1-13 built separately.
+
+THIS CHAPTER:
+- Combine everything into one app: routing, tools, parallel workers with a quality loop, memory per ticket, approval for billing, streaming, managed prompts, sessions/users/tags, scores, a dataset experiment and an LLM judge.
+- A project structure with one file per concern, explained.
+- A checklist of what to look at in Langfuse for one ticket, from first message to approved reply.
+- A recap table: each LangGraph and Langfuse feature, the problem it solves, and its chapter.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: nothing new; only combine earlier chapters.
+
+EXERCISE: Build the capstone app. Process 5 tickets end to end (at least one billing ticket needing approval and one multi-question ticket). Write a one-page report from Langfuse data: average latency, tokens per ticket, the experiment result, and the 2 worst-scored traces with what went wrong.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

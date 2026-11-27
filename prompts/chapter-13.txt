@@ -1,0 +1,48 @@
+CHAPTER 13 PROMPT: Bigger graphs, cost and dashboards
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - sources-langgraph/15-use-subgraphs.md (upload)
+  - https://langfuse.com/docs/observability/features/token-and-cost-tracking
+  - https://langfuse.com/docs/metrics/overview
+  - https://langfuse.com/docs/metrics/features/custom-dashboards
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 15-use-subgraphs.md
+  - 04-graph-api.md
+  - "Token & Cost Tracking - Langfuse"
+  - "LLM Metrics & Analytics - Langfuse"
+  - "Custom Dashboards - Langfuse"
+  - "Open Source Observability for LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 1926 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 13 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 13: "Bigger graphs, cost and dashboards"
+
+WHAT EXISTS SO FAR: The full support helper with prompts, scores, datasets, experiments and an LLM judge.
+
+THIS CHAPTER:
+- Subgraphs: a group of nodes (for example the billing flow) as its own graph, used as one node in the main graph; how state is shared or translated, per the sources.
+- How subgraphs appear as nested observations in a Langfuse trace.
+- Token and cost tracking: local models have no per-token cost, so Langfuse shows none. Defining a custom model price, per the sources, to estimate the cost on a paid model.
+- Dashboards: built-in metrics (latency, tokens, cost, scores over time) and custom dashboards, per the sources.
+- Numbers to watch for a support bot: latency per ticket, tokens per ticket, failure rate, score averages.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: nothing new beyond this chapter; do not re-teach earlier chapters.
+
+EXERCISE: Move the billing flow into a subgraph. Add a custom model price for qwen3.5:9b using a paid model's price. Build a dashboard with average latency per trace name, total tokens per day and the average correct_category score.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

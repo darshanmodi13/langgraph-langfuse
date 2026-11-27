@@ -1,0 +1,45 @@
+CHAPTER 12 PROMPT: LLM-as-a-judge with a local model
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - https://langfuse.com/docs/administration/llm-connection
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - "LLM-as-a-Judge - Langfuse"
+  - "LLM Connections - Langfuse"
+  - "Datasets - Langfuse"
+  - "Evaluation of LLM Applications - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2021 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 12 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 12: "LLM-as-a-judge with a local model"
+
+WHAT EXISTS SO FAR: The support helper, a dataset of 10 tickets, and experiments compared with code-based scores.
+
+THIS CHAPTER:
+- The problem: qualities like helpful, polite or correct cannot be checked with simple code.
+- What LLM-as-a-judge is: another LLM grades the output with a judging prompt and returns a score.
+- Connecting Langfuse to local Ollama, including the host.docker.internal URL and the whitelist setting in section 6 of 00-book-rules.md.
+- Creating an LLM connection and an evaluator in the UI, and choosing what it runs on (live traces/observations or experiments), per the sources.
+- Writing a judge prompt and choosing the score type.
+- Judging in code instead: with_structured_output() returning a grade and a reason, saved as a score.
+- Limits of a small local judge: it can be inconsistent; compare its grades with manual annotations.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: subgraphs, cost tracking, dashboards.
+
+EXERCISE: Set up the Ollama LLM connection and an evaluator that scores reply politeness from 0 to 1. Re-run the dataset experiment and compare the judge's scores with your manual helpfulness annotations from Chapter 10. Where do they disagree?
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

@@ -1,0 +1,52 @@
+CHAPTER 5 PROMPT: Logging vs tracing: sessions, users, tags and metadata
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - https://langfuse.com/docs/observability/features/users
+  - https://langfuse.com/docs/observability/features/tags
+  - https://langfuse.com/docs/observability/features/metadata
+  - https://langfuse.com/docs/observability/features/environments
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - "Sessions - Langfuse"
+  - "User Tracking - Langfuse"
+  - "Tags - Langfuse"
+  - "Metadata - Langfuse"
+  - "Environments - Langfuse"
+  - "Python & JS/TS Observability SDKs - Langfuse"
+  - "LangChain Tracing & Callbacks — Open Source Observability for LangChain & LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2381 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 5 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 5: "Logging vs tracing: sessions, users, tags and metadata"
+
+WHAT EXISTS SO FAR: step2_routing.py (routing), step3_tools.py (agent with tools), step4_advanced.py (parallel workers, evaluator loop). All traced.
+
+THIS CHAPTER:
+- Logging vs tracing: print()/logging write flat lines; a trace records nested steps with inputs, outputs, timings and tokens. When to use each.
+- The problem: finding one customer's tickets, or all billing tickets, among thousands of traces.
+- Setting session ID, user ID, tags and trace name from config["metadata"] (see section 6 of 00-book-rules.md), for example:
+  app.invoke(input, config={"callbacks": [CallbackHandler()], "metadata": {"langfuse_session_id": "ticket-123", "langfuse_user_id": "customer-42", "langfuse_tags": ["billing"], "langfuse_trace_name": "support-ticket"}})
+- propagate_attributes from the SDK as the other way, per the sources.
+- Sessions (group traces of one conversation) and the Sessions view; users and the Users view.
+- Tags vs metadata: what each is good for; filtering traces.
+- Environments (development vs production), per the sources.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: memory, checkpointers, interrupts, streaming, prompt management, scores, datasets.
+
+EXERCISE: Wrap step3_tools.py in handle_ticket(ticket_id, customer_id, text) that sets session ID = ticket_id, user ID = customer_id, a category tag and trace name 'support-ticket'. Send 2 messages for ticket T-1 (customer C-1) and 1 for T-2 (customer C-2). In Langfuse, find the T-1 session with 2 traces, the C-1 user view, and all traces with the billing tag.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

@@ -1,0 +1,50 @@
+CHAPTER 10 PROMPT: Scores, annotation and user feedback
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - https://langfuse.com/docs/evaluation/scores/overview
+  - https://langfuse.com/docs/evaluation/evaluation-methods/scores-via-sdk
+  - https://langfuse.com/docs/evaluation/evaluation-methods/scores-via-ui
+  - https://langfuse.com/docs/evaluation/evaluation-methods/annotation-queues
+  - https://langfuse.com/docs/observability/features/user-feedback
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - "Evaluation of LLM Applications - Langfuse"
+  - "LLM Evaluation Scores - Langfuse"
+  - "Scores via API/SDK - Langfuse"
+  - "Scores via UI - Langfuse"
+  - "Annotation Queues - Langfuse"
+  - "User Feedback - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 1843 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 10 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 10: "Scores, annotation and user feedback"
+
+WHAT EXISTS SO FAR: The support helper with tools, memory, approval, streaming and Langfuse-managed prompts.
+
+THIS CHAPTER:
+- The problem: a trace shows that the agent ran, not whether it was good.
+- What a score is; score types (numeric, categorical, boolean), per the sources.
+- Adding scores from code to a trace or observation, exactly as the sources show, including how to get the trace ID in a LangGraph run.
+- Manual scoring in the UI (Annotate), score configs, and annotation queues for reviewing many traces.
+- User feedback (thumbs up/down) recorded as a score.
+- Filtering traces by score and reading averages in the UI.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: datasets, experiments, LLM-as-a-judge, subgraphs, dashboards.
+
+EXERCISE: After each run, add a boolean score correct_category (compare with an expected category you pass in) and a numeric score reply_length. Run 5 tickets. Manually annotate 2 traces in the UI with a helpfulness score. Filter traces where correct_category is false.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

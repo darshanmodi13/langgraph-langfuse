@@ -1,0 +1,43 @@
+CHAPTER 11 PROMPT: Datasets and experiments
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - https://langfuse.com/docs/evaluation/experiments/experiments-via-sdk
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - "Evaluation of LLM Applications - Langfuse"
+  - "Datasets - Langfuse"
+  - "Experiments via SDK - Langfuse"
+  - "Scores via API/SDK - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 1806 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 11 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 11: "Datasets and experiments"
+
+WHAT EXISTS SO FAR: The support helper, with scores from code and manual annotation in the UI.
+
+THIS CHAPTER:
+- The problem: after changing a prompt or model, how do you know it did not get worse? Manual testing does not scale.
+- Datasets: items with input and expected output; creating them in the UI and with the SDK; adding a production trace to a dataset.
+- Experiments: running the support helper on every item, scoring each result, comparing runs side by side, exactly as the sources show.
+- What to compare: prompt version 1 vs 2, qwen3.5:9b vs another local model, temperature.
+- Treating it like a test suite for an AI app (like unit tests in CI).
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: LLM-as-a-judge, subgraphs, cost tracking, dashboards.
+
+EXERCISE: Create a dataset of 10 tickets with the expected category for each. Run an experiment with prompt version 1 and one with version 2, scoring correct_category. Compare the runs in Langfuse and decide which version wins.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

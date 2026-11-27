@@ -1,0 +1,47 @@
+CHAPTER 6 PROMPT: Memory: checkpointers, threads and long-term stores
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - sources-langgraph/13-checkpointers.md (upload)
+  - sources-langgraph/14-stores.md (upload)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 06-persistence.md
+  - 07-add-memory.md
+  - 13-checkpointers.md
+  - 14-stores.md
+  - "Sessions - Langfuse"
+  - "Open Source Observability for LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2180 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 6 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 6: "Memory: checkpointers, threads and long-term stores"
+
+WHAT EXISTS SO FAR: The support helper with tools (step3_tools.py), traced with session ID, user ID, tags and trace name.
+
+THIS CHAPTER:
+- The problem: each invoke() forgets everything, so a follow-up ("what did I just ask?") fails. The plain Python way (a history list by hand) and why it breaks.
+- Checkpointers: compile(checkpointer=InMemorySaver()); state saved at super-step boundaries; config={"configurable": {"thread_id": "..."}} picks the conversation.
+- Short-term memory (one thread) vs long-term memory (a store shared across threads), in a table.
+- Stores: compile(store=InMemoryStore()), namespaces, put/search, reading the store in a node, per the sources.
+- Trimming long histories and inspecting saved state (get_state), per the sources.
+- In Langfuse: runs are not grouped by thread_id automatically; pass langfuse_session_id equal to the thread_id. Show how each GENERATION's input grows with history.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: interrupts, streaming, prompt management, scores, datasets, evals.
+
+EXERCISE: Give step3_tools.py a checkpointer. On thread 'T-1' send: 'My username is alex', 'How do I reset my password?', 'What is my username?'. Then ask the last one on thread 'T-2'. Explain why the answers differ. In Langfuse, open the T-1 session and compare the input tokens of the three turns.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

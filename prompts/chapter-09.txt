@@ -1,0 +1,49 @@
+CHAPTER 9 PROMPT: Prompt management: versioning prompts in Langfuse
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - https://langfuse.com/docs/prompt-management/get-started
+  - https://langfuse.com/docs/prompt-management/features/link-to-traces
+  - https://langfuse.com/docs/prompt-management/features/variables
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - "Open Source Prompt Management - Langfuse"
+  - "Get Started with Prompt Management - Langfuse"
+  - "Link to Traces - Langfuse"
+  - "Variables - Langfuse"
+  - "LangChain Tracing & Callbacks — Open Source Observability for LangChain & LangGraph - Langfuse"
+  - "Open Source Observability for LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 1991 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 9 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 9: "Prompt management: versioning prompts in Langfuse"
+
+WHAT EXISTS SO FAR: The support helper with tools, memory, approval and streaming. Its prompts are hard-coded strings.
+
+THIS CHAPTER:
+- The problem: hard-coded prompts need a code change to edit, and you cannot tell which prompt version produced which answer.
+- Creating prompts in the Langfuse UI and with the SDK; text vs chat prompts; versions and labels (production, staging).
+- Fetching a prompt in code and filling variables, per the sources.
+- Caching, so fetching adds no latency, per the sources.
+- Linking a prompt version to the GENERATION when using LangChain/LangGraph, exactly as the sources show.
+- Rolling back by moving the production label to an older version.
+- In Langfuse: which prompt version each generation used, and comparing versions.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: scores, datasets, experiments, LLM-as-a-judge, subgraphs, dashboards.
+
+EXERCISE: Move the llm_call system prompt and the classifier prompt into Langfuse. Create version 1 and a version 2 with a different tone, and switch the production label without changing code. Run the same ticket under each and compare the two generations in Langfuse.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

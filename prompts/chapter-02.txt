@@ -1,0 +1,54 @@
+CHAPTER 2 PROMPT: Why LangGraph, and how to see inside it with Langfuse
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 01-overview.md
+  - 02-quickstart.md
+  - 03-thinking-in-graph-api.md
+  - 04-graph-api.md
+  - 10-chat-ollama.md
+  - "LLM Observability & Application Tracing (Open Source) - Langfuse"
+  - "Get Started with LLM Tracing - Langfuse"
+  - "LangChain Tracing & Callbacks — Open Source Observability for LangChain & LangGraph - Langfuse"
+  - "Open Source Observability for LangGraph - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2944 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 2 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 2: "Why LangGraph, and how to see inside it with Langfuse"
+
+WHAT EXISTS SO FAR: main.py: one traced ChatOllama call that summarises a ticket. Langfuse runs and the .env keys work.
+
+THIS CHAPTER:
+Section 1. Plain Python: summarise(ticket) -> categorise(summary) -> draft_reply(ticket, category), each calling ChatOllama. Then try adding a branch (billing skips a docs lookup), a retry (redo a short reply, max 3 times) and visibility into each step. Show how messy it gets.
+
+Section 2. The same helper as a graph: TypedDict state, nodes returning only the keys they change (merged like a Redux reducer), START/END edges, compile(), invoke(). MessagesState and how messages append. Compare side by side with Section 1.
+
+Section 3. Seeing inside with Langfuse: add the CallbackHandler to app.invoke() and teach everything in section 5 "Langfuse UI reference" of 00-book-rules.md, using this graph's real trace as the example.
+
+Section 4. Routing. Build step2_routing.py: SupportTicketState (email_content, classification, search_results, draft_response); classify_intent sets the classification and routes with Command(update=..., goto=...) to search_documentation, bug_tracking or draft_response. Explain:
+- Command = update state and pick the next node in one return
+- add_conditional_edges = the node only does work; a separate router function picks the next node; when to use which
+- the return hint Command[Literal[...]] tells the graph diagram the possible routes
+- drawing the graph to graph.mmd; solid arrows = fixed edges, dotted = runtime choices
+- in Langfuse, only nodes that ran appear, so you see the route taken
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: tools, Send, parallel workers, evaluator loops, memory, interrupts, streaming, prompt management, scores, datasets.
+
+EXERCISE: On step2_routing.py, replace the keyword-based classify_intent with llm.with_structured_output() and a Pydantic model (intent, urgency, summary), keeping the Command routing. Run a billing, a bug and a question ticket; for each, find in Langfuse the route taken, the GENERATION's input and output, and its token counts. Give the expected trace shape for each.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------

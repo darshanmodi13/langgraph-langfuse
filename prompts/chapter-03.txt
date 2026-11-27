@@ -1,0 +1,47 @@
+CHAPTER 3 PROMPT: Tools and the agent loop
+======================================================================
+
+STEP 1: SOURCES
+Add these to your notebook first (Add source -> Website for links, Upload files for files):
+  - prompts/00-book-rules.md (upload once; skip if already added)
+  - https://langfuse.com/docs/observability/features/observation-types
+
+Then, in the Create report dialog, open the sources dropdown and tick ONLY:
+  - 00-book-rules.md
+  - 02-quickstart.md
+  - 05-workflows-agents.md
+  - 10-chat-ollama.md
+  - "LangChain Tracing & Callbacks — Open Source Observability for LangChain & LangGraph - Langfuse"
+  - "Open Source Observability for LangGraph - Langfuse"
+  - "Observation Types - Langfuse"
+
+STEP 2: Studio -> Reports -> Document -> pencil icon -> delete everything -> paste
+everything between the two scissor lines below -> Generate.
+(The prompt is 2527 characters; NotebookLM allows up to 5,000.)
+
+-------- 8< -------- COPY FROM HERE -------- 8< --------
+Write Chapter 3 of the book described in the source "00-book-rules.md". Follow every rule in that source (style, setup, Langfuse rules, chapter plan, verified facts).
+Critical, never break:
+- Every app.invoke(...) passes config={"callbacks": [CallbackHandler()]} (from langfuse.langchain import CallbackHandler), and every script ends with get_client().flush().
+- ChatOllama(model="qwen3.5:9b", temperature=0, reasoning=False). uv only, never pip.
+- Cover ONLY this chapter. Build on WHAT EXISTS SO FAR. Never invent function names, parameters or UI features; if the sources do not cover something, say so.
+
+CHAPTER 3: "Tools and the agent loop"
+
+WHAT EXISTS SO FAR: step2_routing.py: a traced graph that classifies a ticket and routes it with Command.
+
+THIS CHAPTER:
+- What a tool is: a normal function the LLM can ASK to run; your code runs it (like a frontend calling fetch).
+- @tool: name from the function name, description from the docstring, arguments from type hints; the only things the LLM reads. State the tool facts in section 6 of 00-book-rules.md.
+- llm.bind_tools(tools) and why it adds input tokens.
+- AIMessage.tool_calls (name, args, id); ToolNode runs the function and appends a ToolMessage whose tool_call_id matches.
+- step3_tools.py loop: START -> llm_call -> should_continue -> tool_node -> back to llm_call (a fixed add_edge("tool_node", "llm_call")) -> ... -> END. should_continue reads the last message with getattr(last_message, "tool_calls", None) (like optional chaining) and returns "tool_node" or END.
+- How messages grow: Human -> AI(tool_calls) -> Tool -> AI(final answer). The system prompt is added inside the node and not stored in state.
+- In Langfuse: two GENERATIONs per request (before and after the tool), the tool call in the first generation's output, the ToolMessage, and load_duration for cold starts.
+
+DO NOT COVER: topics of other chapters in the chapter plan, especially: Send, parallel workers, evaluator loops, sessions, memory, interrupts, streaming, prompt management, scores.
+
+EXERCISE: On step3_tools.py, add a tool check_refund_status(order_id: str) with a good docstring. Ask: 'My app crashes when I upload a photo', 'What is 2 + 2?', 'Where is my refund for order 1234?', 'My app crashed and I was double charged'. For each, predict then check in Langfuse: number of GENERATIONs, tools called, input tokens of the first call.
+
+End with a 5-line summary, 5 quiz questions (answers at the very end), then the exercise with expected result and hints, not the full solution.
+-------- 8< -------- COPY UNTIL HERE -------- 8< --------
